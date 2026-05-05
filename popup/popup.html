@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Page Summarizer</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+
+  <header class="header">
+    <div class="header-left">
+      <div class="logo">
+        <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+          <path d="M2 17l10 5 10-5"/>
+          <path d="M2 12l10 5 10-5"/>
+        </svg>
+        <span class="logo-text">Summarizer</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="page-info" id="pageInfo">
+    <div class="page-favicon">
+      <img id="pageFavicon" src="" alt="" aria-hidden="true" />
+    </div>
+    <p class="page-title" id="pageTitle">Loading page…</p>
+  </div>
+
+  <div class="action-bar">
+    <button id="summarizeBtn" class="btn btn-primary" aria-label="Summarize this page">
+      <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M9 11l3 3L22 4"/>
+        <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>
+      </svg>
+      <span class="btn-label">Summarize Page</span>
+    </button>
+
+    <button id="clearBtn" class="btn btn-secondary" aria-label="Clear summary" style="display:none">
+      <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="3 6 5 6 21 6"/>
+        <path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/>
+        <path d="M10 11v6M14 11v6"/>
+      </svg>
+    </button>
+  </div>
+
+  <div id="loadingState" class="loading-state" hidden>
+    <div class="spinner" aria-hidden="true">
+      <div class="spinner-ring"></div>
+    </div>
+    <p class="loading-text" id="loadingText">Analyzing page content…</p>
+    <div class="loading-progress">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+  </div>
+
+  <div id="errorState" class="error-state" hidden role="alert">
+    <div class="error-icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"/>
+        <line x1="12" y1="8" x2="12" y2="12"/>
+        <line x1="12" y1="16" x2="12.01" y2="16"/>
+      </svg>
+    </div>
+    <p class="error-message" id="errorMessage">Something went wrong.</p>
+  </div>
+
+
+  <div id="emptyState" class="empty-state">
+    <div class="empty-illustration" aria-hidden="true">
+      <svg viewBox="0 0 80 60" fill="none">
+        <rect x="8" y="8" width="64" height="44" rx="4" fill="var(--surface-2)" stroke="var(--border)" stroke-width="1.5"/>
+        <rect x="18" y="18" width="30" height="3" rx="1.5" fill="var(--text-muted)"/>
+        <rect x="18" y="25" width="44" height="2" rx="1" fill="var(--border)"/>
+        <rect x="18" y="30" width="38" height="2" rx="1" fill="var(--border)"/>
+        <rect x="18" y="35" width="42" height="2" rx="1" fill="var(--border)"/>
+        <circle cx="58" cy="42" r="10" fill="var(--accent)" opacity="0.15"/>
+        <path d="M54 42l3 3 5-5" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <p class="empty-title">Ready to summarize</p>
+    <p class="empty-hint">Click <strong>Summarize Page</strong> to analyze this page with AI.</p>
+  </div>
+
+  <div id="summaryState" class="summary-state" hidden>
+
+    <!-- Meta chips -->
+    <div class="meta-chips" id="metaChips">
+      <span class="chip chip-time" id="chipReadTime"></span>
+      <span class="chip chip-words" id="chipWords"></span>
+      <span class="chip chip-sentiment" id="chipSentiment"></span>
+      <span class="chip chip-category" id="chipCategory"></span>
+      <span class="chip chip-cache" id="chipCache" hidden>Cached</span>
+    </div>
+
+    <!-- Overview -->
+    <section class="summary-section" aria-label="Summary overview">
+      <h2 class="section-heading">
+        <svg class="section-icon" viewBox="0 0 16 16" fill="currentColor">
+          <path d="M2 4a1 1 0 011-1h10a1 1 0 110 2H3a1 1 0 01-1-1zm0 4a1 1 0 011-1h10a1 1 0 110 2H3a1 1 0 01-1-1zm0 4a1 1 0 011-1h6a1 1 0 110 2H3a1 1 0 01-1-1z"/>
+        </svg>
+        Overview
+      </h2>
+      <p class="overview-text" id="summaryOverview"></p>
+    </section>
+
+    <!-- Key Points -->
+    <section class="summary-section" aria-label="Key points">
+      <h2 class="section-heading">
+        <svg class="section-icon" viewBox="0 0 16 16" fill="currentColor">
+          <path d="M8 1a7 7 0 100 14A7 7 0 008 1zm0 2.5a.5.5 0 010 1 .5.5 0 010-1zm.5 3.5a.5.5 0 00-1 0v4a.5.5 0 001 0V7z"/>
+        </svg>
+        Key Points
+      </h2>
+      <ul class="bullet-list" id="bulletList"></ul>
+    </section>
+
+    <!-- Insights -->
+    <section class="summary-section" aria-label="Insights">
+      <h2 class="section-heading">
+        <svg class="section-icon" viewBox="0 0 16 16" fill="currentColor">
+          <path d="M8 0a8 8 0 100 16A8 8 0 008 0zM6.5 5C6.5 4.17 7.17 3.5 8 3.5S9.5 4.17 9.5 5 8.83 6.5 8 6.5 6.5 5.83 6.5 5zm1 2.5h1v5H7V7.5z"/>
+        </svg>
+        Insights
+      </h2>
+      <ul class="insight-list" id="insightList"></ul>
+    </section>
+
+    <!-- Key Terms -->
+    <section class="summary-section" aria-label="Key terms">
+      <h2 class="section-heading">
+        <svg class="section-icon" viewBox="0 0 16 16" fill="currentColor">
+          <path d="M6.5 0a.5.5 0 010 1h-5A.5.5 0 001 1.5v13a.5.5 0 00.5.5h13a.5.5 0 00.5-.5v-5a.5.5 0 011 0v5a1.5 1.5 0 01-1.5 1.5h-13A1.5 1.5 0 010 14.5v-13A1.5 1.5 0 011.5 0h5zm6 0a.5.5 0 010 1h-2a.5.5 0 010-1h2zM9 0h.5a.5.5 0 010 1H9V.5A.5.5 0 019 0z"/>
+        </svg>
+        Key Terms
+      </h2>
+      <div class="term-tags" id="termTags"></div>
+    </section>
+
+    <!-- Highlight Toggle -->
+    <div class="highlight-bar">
+      <label class="toggle-label" for="highlightToggle">
+        <svg viewBox="0 0 16 16" fill="currentColor" width="14" height="14">
+          <path d="M11.5 1a.5.5 0 01.5.5v2a.5.5 0 01-.5.5h-2v1h2a.5.5 0 01.5.5v2a.5.5 0 01-.5.5h-2v1h2a.5.5 0 01.5.5v2a.5.5 0 01-.5.5h-2v.5a.5.5 0 01-1 0V14h-1v.5a.5.5 0 01-1 0V14H4.5a.5.5 0 010-1H5v-2H4.5a.5.5 0 010-1H5V8H4.5a.5.5 0 010-1H5V5H4.5a.5.5 0 010-1H5V1.5a.5.5 0 01.5-.5h6z"/>
+        </svg>
+        Highlight key phrases on page
+      </label>
+      <button 
+        id="highlightToggle" 
+        class="toggle-switch" 
+        role="switch" 
+        aria-checked="false" 
+        aria-label="Toggle page highlighting"
+      >
+        <span class="toggle-thumb"></span>
+      </button>
+    </div>
+
+    <!-- Actions -->
+    <div class="summary-actions">
+      <button id="copySummaryBtn" class="btn btn-ghost btn-sm" aria-label="Copy summary to clipboard">
+        <svg class="btn-icon" viewBox="0 0 16 16" fill="currentColor">
+          <path d="M4 1.5H3a2 2 0 00-2 2V14a2 2 0 002 2h10a2 2 0 002-2V3.5a2 2 0 00-2-2h-1v1h1a1 1 0 011 1V14a1 1 0 01-1 1H3a1 1 0 01-1-1V3.5a1 1 0 011-1h1v-1z"/>
+          <path d="M9.5 1a.5.5 0 01.5.5v1a.5.5 0 01-.5.5h-3a.5.5 0 01-.5-.5v-1a.5.5 0 01.5-.5h3zm-3-1A1.5 1.5 0 005 1.5v1A1.5 1.5 0 006.5 4h3A1.5 1.5 0 0011 2.5v-1A1.5 1.5 0 009.5 0h-3z"/>
+        </svg>
+        Copy
+      </button>
+      <button id="refreshBtn" class="btn btn-ghost btn-sm" aria-label="Refresh summary">
+        <svg class="btn-icon" viewBox="0 0 16 16" fill="currentColor">
+          <path d="M8 3a5 5 0 105 5 .5.5 0 011 0 6 6 0 11-1.5-3.9L13 4.5V2.5a.5.5 0 011 0V6a.5.5 0 01-.5.5H10a.5.5 0 010-1h1.88A5.003 5.003 0 008 3z"/>
+        </svg>
+        Refresh
+      </button>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
