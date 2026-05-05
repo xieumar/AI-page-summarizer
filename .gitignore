@@ -1,0 +1,9 @@
+# Configuration files containing sensitive keys
+config.js
+
+# Browser extension related
+*.log
+.DS_Store
+node_modules/
+dist/
+build/
