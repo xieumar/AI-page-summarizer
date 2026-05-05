@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Page Summarizer — Settings</title>
+  <link rel="stylesheet" href="options.css" />
+</head>
+<body>
+
+  <div class="page">
+
+    <aside class="sidebar">
+      <div class="brand">
+        <svg class="brand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+          <path d="M2 17l10 5 10-5"/>
+          <path d="M2 12l10 5 10-5"/>
+        </svg>
+        <div>
+          <div class="brand-name">AI Summarizer</div>
+          <div class="brand-sub">Settings</div>
+        </div>
+      </div>
+
+      <nav class="nav" role="navigation">
+        <a href="#api-section" class="nav-item active" data-section="api">
+          <svg viewBox="0 0 16 16" fill="currentColor"><path d="M5.5 2a.5.5 0 01.5.5V5h5V2.5a.5.5 0 011 0V14a.5.5 0 01-1 0V9H6v5a.5.5 0 01-1 0V2.5a.5.5 0 01.5-.5z"/></svg>
+          API Configuration
+        </a>
+        <a href="#cache-section" class="nav-item" data-section="cache">
+          <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1a7 7 0 100 14A7 7 0 008 1zM0 8a8 8 0 1116 0A8 8 0 010 8zm5.5-2.5a.5.5 0 011 0V8a.5.5 0 01-.146.354l-1.5 1.5a.5.5 0 01-.708-.708L5.5 7.793V5.5z"/></svg>
+          Cache & Storage
+        </a>
+        <a href="#about-section" class="nav-item" data-section="about">
+          <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 15A7 7 0 118 1a7 7 0 010 14zm0 1A8 8 0 108 0a8 8 0 000 16z"/><path d="M5.255 5.786a.237.237 0 00.241.247h.825c.138 0 .248-.113.266-.25.09-.656.54-1.134 1.342-1.134.686 0 1.314.343 1.314 1.168 0 .635-.374.927-.965 1.371-.673.489-1.206 1.06-1.168 1.987l.003.217a.25.25 0 00.25.246h.811a.25.25 0 00.25-.25v-.105c0-.718.273-.927 1.01-1.486.609-.463 1.244-.977 1.244-2.056 0-1.511-1.276-2.241-2.673-2.241-1.267 0-2.655.59-2.75 2.286zm1.557 5.763c0 .533.425.927 1.01.927.609 0 1.028-.394 1.028-.927 0-.552-.42-.94-1.029-.94-.584 0-1.009.388-1.009.94z"/></svg>
+          About
+        </a>
+      </nav>
+    </aside>
+
+    <main class="main">
+
+      <!-- Status Toast -->
+      <div id="statusToast" class="toast" hidden role="status" aria-live="polite"></div>
+
+      <!-- ── API Configuration ─────────────── -->
+      <section id="api-section" class="section">
+        <div class="section-header">
+          <h1 class="section-title">API Configuration</h1>
+          <p class="section-desc">Choose your AI provider and add your API key. Your key is stored locally and never sent anywhere except directly to the provider's API.</p>
+        </div>
+
+        <div class="card">
+          <div class="field">
+            <label class="label" for="providerSelect">AI Provider</label>
+            <p class="field-hint">Each provider requires a separate API key from their website.</p>
+            <select id="providerSelect" class="select">
+              <option value="anthropic">Anthropic (Claude)</option>
+              <option value="openai">OpenAI (GPT)</option>
+              <option value="gemini">Google (Gemini)</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label class="label" for="apiKeyInput">API Key</label>
+            <p class="field-hint" id="apiKeyHint">Your API key is stored in <code>chrome.storage.local</code> — only accessible by this extension.</p>
+            <div class="input-group">
+              <input
+                type="password"
+                id="apiKeyInput"
+                class="input"
+                placeholder="Enter your API key…"
+                autocomplete="off"
+                spellcheck="false"
+              />
+              <button id="toggleKeyVisibility" class="input-action" aria-label="Toggle key visibility" type="button">
+                <svg id="eyeIcon" viewBox="0 0 16 16" fill="currentColor">
+                  <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133 0 011.66-2.043C4.12 4.668 5.88 3.5 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.133 13.133 0 0114.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12 0-3.879-1.168-5.168-2.457A13.134 13.134 0 011.172 8z"/>
+                  <path d="M8 5.5a2.5 2.5 0 100 5 2.5 2.5 0 000-5zM4.5 8a3.5 3.5 0 117 0 3.5 3.5 0 01-7 0z"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="label" for="modelInput">Model <span class="optional">(optional)</span></label>
+            <p class="field-hint" id="modelHint">Leave blank to use the default model for your provider.</p>
+            <input
+              type="text"
+              id="modelInput"
+              class="input"
+              placeholder="e.g. claude-haiku-4-5-20251001"
+              spellcheck="false"
+            />
+          </div>
+
+          <div class="provider-help" id="providerHelp">
+            <div class="help-item" id="help-anthropic">
+              <strong>Anthropic Claude</strong>
+              <p>Get your API key at <a href="https://console.anthropic.com" target="_blank" rel="noopener">console.anthropic.com</a>. Default model: <code>claude-haiku-4-5-20251001</code> (fast &amp; cheap).</p>
+            </div>
+            <div class="help-item" id="help-openai" hidden>
+              <strong>OpenAI GPT</strong>
+              <p>Get your API key at <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener">platform.openai.com/api-keys</a>. Default model: <code>gpt-4o-mini</code>.</p>
+            </div>
+            <div class="help-item" id="help-gemini" hidden>
+              <strong>Google Gemini</strong>
+              <p>Get your API key at <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">aistudio.google.com</a>. Default model: <code>gemini-1.5-flash</code>.</p>
+            </div>
+          </div>
+
+          <div class="field-row">
+            <button id="saveSettingsBtn" class="btn btn-primary">Save Settings</button>
+            <button id="testConnectionBtn" class="btn btn-secondary">Test Connection</button>
+          </div>
+
+          <div id="testResult" class="test-result" hidden></div>
+        </div>
+      </section>
+
+      <section id="cache-section" class="section" hidden>
+        <div class="section-header">
+          <h1 class="section-title">Cache & Storage</h1>
+          <p class="section-desc">Summaries are cached for 30 minutes per URL to avoid unnecessary API calls.</p>
+        </div>
+
+        <div class="card">
+          <div class="stat-grid">
+            <div class="stat">
+              <div class="stat-value" id="cacheCount">—</div>
+              <div class="stat-label">Cached Summaries</div>
+            </div>
+            <div class="stat">
+              <div class="stat-value" id="cacheSize">—</div>
+              <div class="stat-label">Storage Used</div>
+            </div>
+          </div>
+
+          <div class="field-row">
+            <button id="clearAllCacheBtn" class="btn btn-danger">Clear All Cache</button>
+            <button id="refreshStatsBtn" class="btn btn-secondary">Refresh Stats</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── About ─────────────────────────── -->
+      <section id="about-section" class="section" hidden>
+        <div class="section-header">
+          <h1 class="section-title">About</h1>
+        </div>
+
+        <div class="card">
+          <div class="about-block">
+            <div class="about-row">
+              <span class="about-label">Extension</span>
+              <span class="about-value">AI Page Summarizer v1.0.0</span>
+            </div>
+            <div class="about-row">
+              <span class="about-label">Manifest</span>
+              <span class="about-value">V3</span>
+            </div>
+            <div class="about-row">
+              <span class="about-label">Data Storage</span>
+              <span class="about-value">Local only (chrome.storage.local)</span>
+            </div>
+            <div class="about-row">
+              <span class="about-label">API Key Storage</span>
+              <span class="about-value">Never synced. Local device only.</span>
+            </div>
+            <div class="about-row">
+              <span class="about-label">External Calls</span>
+              <span class="about-value">Only to your chosen AI provider</span>
+            </div>
+          </div>
+
+          <div class="about-info">
+            <p>This extension does not collect any analytics, telemetry, or personal data. All AI calls are made directly from your browser to the provider using your API key.</p>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <script src="options.js"></script>
+</body>
+</html>
