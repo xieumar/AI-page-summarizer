@@ -12,11 +12,7 @@
 
     <aside class="sidebar">
       <div class="brand">
-        <svg class="brand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M12 2L2 7l10 5 10-5-10-5z"/>
-          <path d="M2 17l10 5 10-5"/>
-          <path d="M2 12l10 5 10-5"/>
-        </svg>
+        <img src="../icons/icon48.png" alt="icon">
         <div>
           <div class="brand-name">AI Summarizer</div>
           <div class="brand-sub">Settings</div>
@@ -44,7 +40,6 @@
       <!-- Status Toast -->
       <div id="statusToast" class="toast" hidden role="status" aria-live="polite"></div>
 
-      <!-- ── API Configuration ─────────────── -->
       <section id="api-section" class="section">
         <div class="section-header">
           <h1 class="section-title">API Configuration</h1>
@@ -53,12 +48,11 @@
 
         <div class="card">
           <div class="field">
-            <label class="label" for="providerSelect">AI Provider</label>
-            <p class="field-hint">Each provider requires a separate API key from their website.</p>
-            <select id="providerSelect" class="select">
-              <option value="anthropic">Anthropic (Claude)</option>
-              <option value="openai">OpenAI (GPT)</option>
-              <option value="gemini">Google (Gemini)</option>
+            <label class="label">AI Provider</label>
+            <p class="field-hint">OpenRouter is used to access multiple AI models (Gemini, GPT, Claude) with a single key.</p>
+            <div class="provider-static">OpenRouter (Recommended)</div>
+            <select id="providerSelect" hidden>
+              <option value="openrouter" selected>OpenRouter</option>
             </select>
           </div>
 
@@ -95,20 +89,14 @@
             />
           </div>
 
+          <!-- Provider Help -->
           <div class="provider-help" id="providerHelp">
-            <div class="help-item" id="help-anthropic">
-              <strong>Anthropic Claude</strong>
-              <p>Get your API key at <a href="https://console.anthropic.com" target="_blank" rel="noopener">console.anthropic.com</a>. Default model: <code>claude-haiku-4-5-20251001</code> (fast &amp; cheap).</p>
-            </div>
-            <div class="help-item" id="help-openai" hidden>
-              <strong>OpenAI GPT</strong>
-              <p>Get your API key at <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener">platform.openai.com/api-keys</a>. Default model: <code>gpt-4o-mini</code>.</p>
-            </div>
-            <div class="help-item" id="help-gemini" hidden>
-              <strong>Google Gemini</strong>
-              <p>Get your API key at <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">aistudio.google.com</a>. Default model: <code>gemini-1.5-flash</code>.</p>
+            <div class="help-item" id="help-openrouter">
+              <strong>OpenRouter</strong>
+              <p>Get your API key at <a href="https://openrouter.ai/keys" target="_blank" rel="noopener">openrouter.ai</a>. Use any model, such as <code>google/gemini-2.0-flash-001</code>.</p>
             </div>
           </div>
+
 
           <div class="field-row">
             <button id="saveSettingsBtn" class="btn btn-primary">Save Settings</button>
@@ -144,7 +132,6 @@
         </div>
       </section>
 
-      <!-- ── About ─────────────────────────── -->
       <section id="about-section" class="section" hidden>
         <div class="section-header">
           <h1 class="section-title">About</h1>
