@@ -17,12 +17,21 @@ The AI Page Summarizer is a Chromium-based extension designed to provide users w
 4.  Click "Load unpacked" and select the project directory.
 
 ## Configuration
-This extension requires an OpenRouter API key to function. OpenRouter is used as the unified gateway to ensure consistent performance across various AI models.
+This extension requires an OpenRouter API key to function. OpenRouter is used as the unified gateway to ensure consistent performance across various AI models. There are two ways to configure your key:
 
-1.  Obtain an API key from [OpenRouter.ai](https://openrouter.ai/).
-2.  Access the extension Settings by right-clicking the extension icon and selecting "Options".
-3.  Enter your API key in the provided field and click "Save Settings".
-4.  The default model is `google/gemini-2.0-flash-001`, but you may specify any OpenRouter-supported model in the settings.
+### Option 1: Extension Settings (Recommended)
+1.  Access the extension Settings by right-clicking the extension icon and selecting "Options".
+2.  Enter your API key in the provided field and click "Save Settings".
+3.  The key is stored securely in `chrome.storage.local`.
+
+### Option 2: Local Configuration File
+1.  In the project root, rename `config.example.js` to `config.js`.
+2.  Open `config.js` and enter your API key:
+    ```javascript
+    export const OPENROUTER_API_KEY = "your-key-here";
+    ```
+3.  `config.js` is included in the `.gitignore` file, ensuring your key is never committed to version control.
+
 
 ## Architecture
 The extension is built on the Manifest V3 standard, utilizing a modular service worker architecture:
@@ -35,7 +44,8 @@ The extension is built on the Manifest V3 standard, utilizing a modular service 
 ## Security Implementation
 Security is a core requirement of this project. The following measures have been implemented:
 
-*   Secret Protection: API keys are stored exclusively in `chrome.storage.local`. They are never hardcoded in the source code or committed to version control (enforced via `.gitignore`).
+*   Secret Protection: API keys are handled via `chrome.storage.local` (UI-based) or a local `config.js` file (file-based). Both methods ensure that keys are never hardcoded in the primary source code or committed to version control (enforced via `.gitignore`).
+
 *   Data Sanitization: All AI-generated content is sanitized before injection into the UI to prevent Cross-Site Scripting (XSS) attacks.
 *   Origin Validation: The background worker validates the origin of all incoming messages to ensure they originate from within the extension.
 *   Minimal Permissions: The extension requests only the necessary permissions (`activeTab`, `storage`, `scripting`) to maintain user privacy.
